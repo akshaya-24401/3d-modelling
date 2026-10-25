@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TN Village House — Interactive Blueprint Studio (25' × 74')</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    .blueprint-grid {
+      background-size: 20px 20px;
+      background-image:
+        linear-gradient(to right, rgba(148, 163, 184, 0.12) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(148, 163, 184, 0.12) 1px, transparent 1px);
+    }
+    .room-rect {
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .room-rect:hover {
+      filter: brightness(1.08);
+      stroke-width: 2.5px;
+    }
+    .room-selected {
+      stroke-width: 3px !important;
+      filter: drop-shadow(0 0 6px rgba(59, 130, 246, 0.45));
+    }
+  </style>
+</head>
+<body class="bg-[var(--background)] text-[var(--foreground)] antialiased p-4 md:p-6">
+  <div class="max-w-7xl mx-auto space-y-6">
+
+    <!-- Header -->
+    <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 shadow-sm flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+      <div>
+        <div class="flex items-center gap-2.5">
+          <span class="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-[var(--primary)] text-[var(--primary-foreground)]">25' × 74' Footprint (1,850 sq.ft)</span>
+          <span class="px-2.5 py-0.5 text-xs font-medium rounded-full bg-[var(--secondary)] text-[var(--secondary-foreground)]">6 Guests • Weekends &amp; Festivals</span>
+        </div>
+        <h1 class="text-xl md:text-2xl font-bold mt-2 text-[var(--foreground)]">Tamil Nadu Village House — Blueprint Brainstorm Studio</h1>
+        <p class="text-sm text-[var(--muted-foreground)] mt-1">
+          Based on your Excel layout: 2 Bedrooms, 1 Store Room, 1 Kitchen + Pantry, Front Living + Courtyard (Mutram), Loki Shed &amp; Car Parking.
+        </p>
+      </div>
+
+      <!-- Layer Toggles -->
+      <div class="flex flex-wrap items-center gap-2">
+        <button id="toggle-dims" onclick="toggleLayer('dims')" class="px-3 py-1.5 text-xs font-medium rounded-lg border border-[var(--border)] bg-[var(--primary)] text-[var(--primary-foreground)] transition">
+          Dimensions: ON
+        </button>
+        <button id="toggle-furniture" onclick="toggleLayer('furniture')" class="px-3 py-1.5 text-xs font-medium rounded-lg border border-[var(--border)] bg-[var(--primary)] text-[var(--primary-foreground)] transition">
+          Beds &amp; Furniture: ON
+        </button>
+        <button id="toggle-flow" onclick="toggleLayer('flow')" class="px-3 py-1.5 text-xs font-medium rounded-lg border border-[var(--border)] bg-[var(--secondary)] text-[var(--secondary-foreground)] transition">
+          Breeze &amp; Walk Flow: OFF
+        </button>
+      </div>
+    </div>
+
+    <!-- Option Selector Tabs -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3" id="option-tabs">
+      <!-- Populated by JS -->
+    </div>
+
+    <!-- Main Workspace: SVG Blueprint + Details Sidebar -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+      <!-- Left/Center: Interactive Scaled Blueprint Canvas -->
+      <div class="lg:col-span-7 bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 md:p-5 shadow-sm">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <h2 id="plan-title" class="text-base font-bold text-[var(--foreground)]">Option A</h2>
+            <p id="plan-subtitle" class="text-xs text-[var(--muted-foreground)]">Click any room on the blueprint to inspect dimensions &amp; festival sleeping/usage capacity.</p>
+          </div>
+          <div class="text-right">
+            <span class="text-xs font-mono text-[var(--muted-foreground)]">Scale: 1 Grid = 1 Foot (25' W × 74' L)</span>
+          </div>
+        </div>
+
+        <!-- Legend -->
+        <div class="flex flex-wrap gap-3 mb-4 pb-3 border-b border-[var(--border)] text-xs">
+          <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-sm inline-block" style="background:#dbeafe;border:1px solid #3b82f6"></span>Living / Verandah</span>
+          <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-sm inline-block" style="background:#bae6fd;border:1px dashed #0284c7"></span>Courtyard (Open to Sky)</span>
+          <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-sm inline-block" style="background:#f3e8ff;border:1px solid #9333ea"></span>Bedrooms &amp; Bath</span>
+          <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-sm inline-block" style="background:#ffedd5;border:1px solid #ea580c"></span>Kitchen / Dining / Pantry</span>
+          <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-sm inline-block" style="background:#dcfce7;border:1px solid #16a34a"></span>Store / Pooja</span>
+          <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-sm inline-block" style="background:#e2e8f0;border:1px solid #64748b"></span>Parking / Loki Shed / Service</span>
+        </div>
+
+        <!-- SVG Container -->
+        <div class="w-full overflow-x-auto flex justify-center blueprint-grid rounded-lg border border-[var(--border)] p-3">
+          <svg id="blueprint-svg" viewBox="0 0 420 960" class="w-full max-w-[440px] h-auto select-none"></svg>
+        </div>
+      </div>
+
+      <!-- Right: Analysis, Selected Room Inspector & Pros/Cons -->
+      <div class="lg:col-span-5 space-y-4">
+
+        <!-- Selected Room Card -->
+        <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 shadow-sm">
+          <div class="flex items-center justify-between">
+            <span class="text-xs uppercase tracking-wider font-semibold text-[var(--muted-foreground)]">Selected Space Inspector</span>
+            <span id="room-badge" class="px-2.5 py-0.5 text-xs font-mono font-semibold rounded bg-[var(--secondary)] text-[var(--secondary-foreground)]">Click a room</span>
+          </div>
+          <h3 id="room-name" class="text-lg font-bold mt-1.5 text-[var(--foreground)]">Select any room on the floor plan</h3>
+          <p id="room-desc" class="text-sm text-[var(--muted-foreground)] mt-1">
+            Click on Kitchen, Pantry, Courtyard, Living, Bedroom 1/2, Store, or Loki Shed in the drawing to see how it works for 6 people during weekend &amp; festival stays.
+          </p>
+          <div id="room-tips" class="mt-3 pt-3 border-t border-[var(--border)] text-xs text-[var(--foreground)] space-y-1.5"></div>
+        </div>
+
+        <!-- Why This Layout Works / Tradeoffs -->
+        <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 shadow-sm space-y-4">
+          <h3 class="text-base font-bold text-[var(--foreground)]">Layout Critique &amp; Festival Readiness (6 People)</h3>
+          <p id="plan-summary" class="text-sm text-[var(--muted-foreground)]"></p>
+
+          <div class="space-y-2">
+            <div class="text-xs font-semibold uppercase tracking-wider text-emerald-500">What Works Great (Pros)</div>
+            <ul id="plan-pros" class="text-xs space-y-1.5 text-[var(--foreground)] list-disc pl-4"></ul>
+          </div>
+
+          <div class="space-y-2 pt-2 border-t border-[var(--border)]">
+            <div class="text-xs font-semibold uppercase tracking-wider text-amber-500">Things to Watch Out For (Tradeoffs)</div>
+            <ul id="plan-cons" class="text-xs space-y-1.5 text-[var(--foreground)] list-disc pl-4"></ul>
+          </div>
+
+          <div class="pt-3 border-t border-[var(--border)]">
+            <div class="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)] mb-2">Sleeping Plan for 6 People (+ Festival Overflow)</div>
+            <div id="plan-sleeping" class="text-xs text-[var(--foreground)] bg-[var(--secondary)]/50 rounded-lg p-3 space-y-1"></div>
+          </div>
+        </div>
+
+        <!-- Key Observations on Your Excel Draft -->
+        <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 shadow-sm space-y-2.5">
+          <h3 class="text-sm font-bold text-[var(--foreground)]">3 Quick Fixes from Your Original Excel Sketch</h3>
+          <div class="text-xs text-[var(--muted-foreground)] space-y-2">
+            <p><strong class="text-[var(--foreground)]">1. Right-side width (9 ft) is tight for double beds:</strong> In your Excel sheet, Left = 11', Corridor = 5', Right = 9'. A 9' wide Bedroom 2 leaves only 2.5 ft walking space at the foot of a 6.5' bed. Widening the right side to <strong>10.5' or 11'</strong> (by integrating the corridor into the courtyard/living) makes Room 2 &amp; Dining feel much more spacious.</p>
+            <p><strong class="text-[var(--foreground)]">2. Split Living vs Unified Front Living + Courtyard:</strong> Your Excel has two separate Living zones (`11×16` left + `9×16` right) split by a 5' passage. Merging them around the <strong>front Courtyard (Nadumuttam)</strong> creates one grand festival gathering hall.</p>
+            <p><strong class="text-[var(--foreground)]">3. Dedicated Pantry + Store + Bathrooms:</strong> Adding an walk-in Pantry next to the Kitchen and ensuring 1 attached bath + 1 common bath makes hosting 6 people effortless in the mornings.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const state = {
+      activePlan: 'A',
+      selectedRoomId: null,
+      layers: {
+        dims: true,
+        furniture: true,
+        flow: false
+      }
+    };
+
+    // Scale helpers: 1 foot = 11px. Margin = 40px left, 45px top.
+    const SCALE = 11;
+    const OX = 65;
+    const OY = 55;
+
+    const PLANS = {
+      A: {
+        id: 'A',
+        badge: 'Closest to Your Excel',
+        name: 'Option 1: Refined Central Spine (Agraharam Style)',
+        shortDesc: 'Keeps your exact Excel zoning (Left/Right wings + central axis) while fixing bathroom placement, adding a Pantry, and opening Living into the Courtyard.',
+        summary: 'Directly upgrades your Excel blueprint. Keeps the straight breeze-corridor ("Rezhai") from the front entrance all the way to the rear Service Area, while opening the wall between Front Living and Courtyard so 6+ people can sit together.',
+        pros: [
+          'Zero wasted learning curve — preserves every zone in your Excel sheet in the exact same spot.',
+          'Straight 5-foot central axis gives a traditional Tamil village "vassal-to-backyard" cross-breeze.',
+          'Separate Pantry (11×4) + Store Room (11×6) keeps bulk festival groceries, rice bags & vessels organized.',
+          'Both bedrooms get attached/adjacent bathrooms without cutting into bed space.'
+        ],
+        cons: [
+          'Right wing is 9.5 ft to 10 ft wide — cozy for Bedroom 2, best suited for twin beds or a queen bed against the wall.',
+          'Long central corridor uses ~220 sq.ft of circulation space.'
+        ],
+        sleeping: '• Bedroom 1 (11×15): 1 King Bed + 1 Daybed/Cot (Sleeps 3)\n• Bedroom 2 (10×14): 1 Queen Bed + 1 Pull-out/Floor Mattress (Sleeps 2–3)\n• Front Living / Courtyard Thinnai: Easy charpai/mattress space for 2–4 extra festival guests.',
+        rooms: [
+          { id: 'service_l', name: 'Rear Wet Service & Wash Area', x: 0, y: 0, w: 14, h: 4, type: 'utility', dim: "14' × 4'", desc: 'Backyard utility & heavy vessel washing area (festivals/feasts) with direct access from Kitchen.', tips: ['Ideal for grinding, washing large biriyani/pongal vessels, and laundry machine.', 'Backs onto open garden/backyard.'] },
+          { id: 'service_r', name: 'Rear Drying / Utility Verandah', x: 14, y: 0, w: 11, h: 4, type: 'utility', dim: "11' × 4'", desc: 'Semi-covered rear service verandah for drying clothes, spice/vadam drying, and backyard entry.', tips: ['Direct door from central corridor keeps service staff/activities separate.'] },
+          { id: 'kitchen', name: 'Kitchen (L-Counter)', x: 0, y: 4, w: 11, h: 11, type: 'kitchen', dim: "11' × 11'", desc: 'Spacious village kitchen with L-shaped granite counter, dual sinks, and window to service yard.', tips: ['Connected directly to the walk-in Pantry on the south wall.', 'Easy serving across to the Dining room.'], furn: 'kitchen_L' },
+          { id: 'pantry', name: 'Walk-in Pantry', x: 0, y: 15, w: 11, h: 4.5, type: 'kitchen', dim: "11' × 4.5'", desc: 'Dedicated dry-pantry with floor-to-ceiling shelves for snacks, oils, festival provisions, and appliances.', tips: ['Separates daily cooking clutter from long-term storage in the Store Room.'] },
+          { id: 'store', name: 'Store Room (Grain & Tools)', x: 0, y: 19.5, w: 11, h: 6.5, type: 'store', dim: "11' × 6.5'", desc: 'Lockable village store room for rice sacks, farm produce, folding chairs, and festival decor.', tips: ['Can be locked securely when the house is unoccupied on weekdays.'] },
+          { id: 'pooja', name: 'Pooja Room (NE Corner)', x: 21, y: 4, w: 4, h: 4.5, type: 'store', dim: "4' × 4.5'", desc: 'Dedicated Pooja alcove in the auspicious North-East / East dining zone, exactly as in your Excel.', tips: ['Double-shuttered bell door facing West or South.'] },
+          { id: 'dining', name: 'Dining Hall', x: 14.5, y: 4, w: 10.5, h: 12, type: 'kitchen', dim: "10.5' × 12'", desc: '6-to-8 seater dining hall opposite the Kitchen, with Pooja alcove tucked in the corner.', tips: ['Wide opening allows laying banana leaves (panthi) along the floor during festivals.'], furn: 'dining_6' },
+          { id: 'bath2', name: 'Common / Room 2 Bath', x: 15, y: 16, w: 10, h: 4.5, type: 'bath', dim: "10' × 4.5'", desc: 'Two-door bathroom (or split WC + Bath) accessible from Room 2 and the corridor.', tips: ['Dry/wet separation so two people can brush/wash simultaneously.'] },
+          { id: 'room2', name: 'Bedroom 2 (East Wing)', x: 15, y: 20.5, w: 10, h: 13.5, type: 'bed', dim: "10' × 13.5'", desc: 'Bright bedroom looking straight into the open courtyard windows for morning sunlight.', tips: ['Fits 1 Queen bed + 1 single cot or wardrobe comfortably (Sleeps 2–3).'], furn: 'bed_queen' },
+          { id: 'bath1', name: 'Attached Bath (Room 1)', x: 0, y: 26, w: 11, h: 4.5, type: 'bath', dim: "11' × 4.5'", desc: 'Generous attached bathroom + dressing alcove for Bedroom 1.', tips: ['Plumbing stacked efficiently along the western external wall.'] },
+          { id: 'room1', name: 'Master Bedroom 1 (West Wing)', x: 0, y: 30.5, w: 11, h: 14.5, type: 'bed', dim: "11' × 14.5'", desc: 'Large primary bedroom with wardrobe wall and space for a King bed + extra single daybed.', tips: ['Comfortably sleeps 3 people on festival weekends.'], furn: 'bed_king_plus' },
+          { id: 'courtyard', name: 'Open Courtyard (Nadumuttam)', x: 14.5, y: 34, w: 10.5, h: 15, type: 'courtyard', dim: "10.5' × 15'", desc: 'Traditional sunken open-to-sky courtyard (6×9 skylight cut-out) surrounded by wooden pillars and stone seating ledge.', tips: ['Brings light and rain right into the front living area.', 'Perfect spot for Tulsi maadam, swing (oonjal), and morning coffee.'], furn: 'courtyard_well' },
+          { id: 'living_l', name: 'Main Living Lounge (West)', x: 0, y: 45, w: 11, h: 13, type: 'living', dim: "11' × 13'", desc: 'Primary sofa & TV lounge directly opposite the Open Courtyard for cross-ventilation.', tips: ['Staircase along the North-West corner can lead to the open terrace for evening breeze.'], furn: 'living_lounge' },
+          { id: 'living_r', name: 'Front Courtyard Hall (East)', x: 14.5, y: 49, w: 10.5, h: 17, type: 'living', dim: "10.5' × 17'", desc: 'Informal front gathering hall seamlessly flowing into the Courtyard — ideal for elders & guests.', tips: ['Together with West Living & Courtyard, creates an expansive 30-foot social heart in the front.'], furn: 'swing_seating' },
+          { id: 'corridor', name: 'Central Spine / Rezhai Passage', x: 11, y: 4, w: 3.5, h: 64, type: 'corridor', dim: "3.5'–4' × 64'", desc: 'Unobstructed central walkway connecting the heavy wooden front main door to the rear garden.', tips: ['Open arches around the Courtyard & Living make the front half feel wide open.'] },
+          { id: 'parking', name: 'Covered Car Parking', x: 0, y: 58, w: 11, h: 16, type: 'utility', dim: "11' × 16'", desc: 'Front covered portico for 1 SUV/Sedan + 2 two-wheelers.', tips: ['Side steps lead directly onto the Front Entrance Thinnai.'], furn: 'car' },
+          { id: 'thinnai', name: 'Entrance Thinnai & Main Door', x: 11, y: 68, w: 3.5, h: 6, type: 'living', dim: "4' × 6'", desc: 'Recessed traditional village entrance porch with red oxide / Athangudi tile steps.', tips: ['Double teakwood door with brass studs at the threshold.'] },
+          { id: 'loki', name: 'Loki Shed (Front Corner)', x: 14.5, y: 66, w: 10.5, h: 8, type: 'utility', dim: "10.5' × 8'", desc: 'Dedicated front Loki Shed as marked in your Excel plan, accessible from the front yard.', tips: ['Great for outdoor gear, cycles, farm tools, or pet/livestock shelter.'] }
+        ]
+      },
+
+      B: {
+        id: 'B',
+        badge: 'Best Front Living + Courtyard',
+        name: 'Option 2: Unified Front Pavilion & Central Mutram',
+        shortDesc: 'Merges the two split Living boxes from your Excel into one grand 25-ft wide Front Living + Courtyard pavilion for all 6 people to hang out together.',
+        summary: 'In a weekend/festival home for 6 people, everyone spends 80% of waking hours in the Living + Courtyard + Dining. This layout removes the narrow front corridor and gives you a stunning 25-foot-wide Front Living & Courtyard zone right as you enter.',
+        pros: [
+          'Dramatic village house arrival: you step past the Car Park & Loki Shed into a full-width 25\' × 26\' Living + Courtyard pavilion.',
+          'Wider Bedrooms (12\' × 14\' and 12\' × 14\') placed side-by-side in the quiet middle zone with a buffer lobby.',
+          'Kitchen + Walk-in Pantry + Store + Dining occupy the entire rear zone — great for festival cooking feasts.'
+        ],
+        cons: [
+          'Rear backyard requires walking through the side passage between the bedrooms rather than a straight center-line.'
+        ],
+        sleeping: '• Bedroom 1 (12×15): 1 King Bed + 1 Single Cot (Sleeps 3 comfortably)\n• Bedroom 2 (10×15): 2 Queen/Double Beds or 1 Queen + Bunk/Daybed (Sleeps 3)\n• Both bedrooms are wider and more square than the 9-ft wing in the original sketch.',
+        rooms: [
+          { id: 'service', name: 'Full-Width Rear Service & Wash Verandah', x: 0, y: 0, w: 25, h: 4.5, type: 'utility', dim: "25' × 4.5'", desc: 'Continuous rear utility verandah across the entire back for wet grinding, dishwashing, laundry, and spice drying.', tips: ['Keeps all messy festival cooking prep outside the main kitchen.'] },
+          { id: 'kitchen', name: 'Spacious Kitchen', x: 0, y: 4.5, w: 11.5, h: 12, type: 'kitchen', dim: "11.5' × 12'", desc: 'Large C-shaped kitchen with island/breakfast counter opening toward Dining.', tips: ['Direct door to rear wet wash area and adjacent Walk-in Pantry.'], furn: 'kitchen_L' },
+          { id: 'pantry', name: 'Walk-in Pantry', x: 0, y: 16.5, w: 6, h: 6, type: 'kitchen', dim: "6' × 6'", desc: 'Dedicated walk-in pantry tucked right inside the kitchen zone for dry rations & appliances.', tips: ['U-shaped shelving holds months of dry goods and festival cookware.'] },
+          { id: 'store', name: 'Store Room', x: 6, y: 16.5, w: 5.5, h: 6, type: 'store', dim: "5.5' × 6'", desc: 'Lockable Store Room accessed from the passage for tools, extra mattresses, and grain bags.', tips: ['Separate door from the Pantry so kitchen flow stays clean.'] },
+          { id: 'pooja', name: 'Pooja Room', x: 20.5, y: 4.5, w: 4.5, h: 5, type: 'store', dim: "4.5' × 5'", desc: 'Auspicious NE corner Pooja room with carved wooden doors.', tips: ['Positioned so family can gather in the Dining hall during festival poojas.'] },
+          { id: 'dining', name: 'Festival Dining Hall', x: 11.5, y: 4.5, w: 13.5, h: 18, type: 'kitchen', dim: "13.5' × 18'", desc: 'Generous dining hall that easily seats 8–10 at a table or 12+ on banana leaves.', tips: ['Washbasin tucked near the bathroom wall.'], furn: 'dining_6' },
+          { id: 'bath1', name: 'Attached Bath 1', x: 0, y: 22.5, w: 7, h: 5, type: 'bath', dim: "7' × 5'", desc: 'Attached bathroom for Bedroom 1.', tips: ['Ventilated to the western exterior wall.'] },
+          { id: 'bath2', name: 'Common + Attached Bath 2', x: 18, y: 22.5, w: 7, h: 5, type: 'bath', dim: "7' × 5'", desc: 'Bathroom serving Bedroom 2 and Dining/Living guests.', tips: ['Accessible without entering Bedroom 2.'] },
+          { id: 'room1', name: 'Bedroom 1 (West)', x: 0, y: 27.5, w: 11, h: 14.5, type: 'bed', dim: "11' × 14.5'", desc: 'Quiet mid-house bedroom shielded from front road noise and kitchen heat.', tips: ['Fits King bed + single daybed for 3 family members.'], furn: 'bed_king_plus' },
+          { id: 'mid_pass', name: 'Central Breezeway Passage', x: 11, y: 22.5, w: 4, h: 19.5, type: 'corridor', dim: "4' × 19.5'", desc: 'Short, bright passage linking the Front Courtyard Pavilion to the Rear Dining Hall.', tips: ['Framed by wooden arches on both ends.'] },
+          { id: 'room2', name: 'Bedroom 2 (East)', x: 15, y: 27.5, w: 10, h: 14.5, type: 'bed', dim: "10' × 14.5'", desc: 'Second bedroom with window overlooking the front courtyard greenery.', tips: ['Fits Queen bed + trundle/cot for 3 guests.'], furn: 'bed_queen' },
+          { id: 'living', name: 'Front Grand Living Hall', x: 0, y: 42, w: 13.5, h: 16, type: 'living', dim: "13.5' × 16'", desc: 'Wide front living room completely open to the adjacent Courtyard (Nadumuttam) on the East.', tips: ['Everyone in the Living room enjoys the daylight, rain view, and breeze from the Courtyard.'], furn: 'living_lounge' },
+          { id: 'courtyard', name: 'Front Courtyard (Nadumuttam) + Oonjal', x: 13.5, y: 42, w: 11.5, h: 24, type: 'courtyard', dim: "11.5' × 24'", desc: 'Signature front courtyard with pillared corridor, stone Tulsi well, and traditional wooden swing (Oonjal).', tips: ['Matches your requirement: "Front la one living and courtyard" side-by-side!'], furn: 'courtyard_well' },
+          { id: 'parking', name: 'Car Parking Portico', x: 0, y: 58, w: 11.5, h: 16, type: 'utility', dim: "11.5' × 16'", desc: 'Front covered car parking on the left, matching your Excel layout.', tips: ['Direct sheltered entry into the Thinnai during monsoon rains.'], furn: 'car' },
+          { id: 'thinnai', name: 'Front Thinnai Verandah', x: 11.5, y: 58, w: 3.5, h: 16, type: 'living', dim: "3.5' × 16'", desc: 'Welcoming front entrance passage & Thinnai bench leading directly into the Living + Courtyard.', tips: ['Great for greeting village neighbors without bringing everyone deep inside.'] },
+          { id: 'loki', name: 'Loki Shed', x: 15, y: 66, w: 10, h: 8, type: 'utility', dim: "10' × 8'", desc: 'Front-right Loki Shed exactly where you placed it in Excel.', tips: ['Buffers the Courtyard from the street while keeping outdoor access easy.'] }
+        ]
+      },
+
+      C: {
+        id: 'C',
+        badge: 'Best for 6-Person Privacy',
+        name: 'Option 3: Courtyard Heart with Split Bedroom Suites',
+        shortDesc: 'Places the Living + Courtyard right behind the front entrance, and gives both bedrooms full 11–12 ft widths with private bath + wardrobe zones.',
+        summary: 'If two couples + kids/parents (6 people) stay together on weekends, narrow 9-ft bedrooms can feel cramped. This plan staggers the layout so BOTH Bedroom 1 and Bedroom 2 are 12 ft wide, while keeping Front Living + Courtyard right at the entrance.',
+        pros: [
+          'No narrow 9-ft rooms! Both bedrooms are generous (12\'×14\' and 12\'×13\') and easily fit 3 people each.',
+          'Front Living + Central Courtyard greet you immediately inside the front door.',
+          'Kitchen + Pantry + Store form a dedicated culinary block at the back.'
+        ],
+        cons: [
+          'Slightly differs from the strict left/right column split of your Excel sheet.'
+        ],
+        sleeping: '• Bedroom 1 Suite (12×14): 1 King Bed + 1 Single Bed (Sleeps 3)\n• Bedroom 2 Suite (12×13): 2 Double Beds or 1 Queen + 1 Single (Sleeps 3)\n• Living / Thinnai: Built-in masonry seating ledge doubles as extra guest bed.',
+        rooms: [
+          { id: 'service', name: 'Rear Service & Outdoor Kitchen Yard', x: 0, y: 0, w: 25, h: 4, type: 'utility', dim: "25' × 4'", desc: 'Backyard utility strip for firewood stove (viragu aduppu) on festival days and heavy vessel washing.', tips: ['Essential in a village house when making pongal or feast dishes outdoors.'] },
+          { id: 'kitchen', name: 'Kitchen', x: 0, y: 4, w: 13, h: 11, type: 'kitchen', dim: "13' × 11'", desc: 'Wide, airy kitchen with East-facing cooking counter (Vastu friendly) and backyard door.', tips: ['Direct sliding door into the Walk-in Pantry.'], furn: 'kitchen_L' },
+          { id: 'pantry', name: 'Walk-in Pantry', x: 0, y: 15, w: 6.5, h: 5.5, type: 'kitchen', dim: "6.5' × 5.5'", desc: 'Dedicated Pantry directly attached to Kitchen.', tips: ['Keeps pulses, spices, and snacks cool and dark.'] },
+          { id: 'store', name: 'Store Room', x: 6.5, y: 15, w: 6.5, h: 5.5, type: 'store', dim: "6.5' × 5.5'", desc: 'Dedicated Store Room for farm produce, tools, and extra bedding.', tips: ['Opens to the dining corridor for easy loading/unloading.'] },
+          { id: 'pooja', name: 'Pooja Room', x: 20, y: 4, w: 5, h: 4.5, type: 'store', dim: "5' × 4.5'", desc: 'Dedicated Pooja room in the North-East corner.', tips: ['Quiet corner away from bathrooms and foot traffic.'] },
+          { id: 'dining', name: 'Dining Hall', x: 13, y: 4, w: 12, h: 16.5, type: 'kitchen', dim: "12' × 16.5'", desc: 'Spacious Dining Hall connecting Kitchen to the central Courtyard.', tips: ['Can easily seat all 6 family members plus visiting relatives.'], furn: 'dining_6' },
+          { id: 'room1', name: 'Bedroom 1 (Mid-West Suite)', x: 0, y: 20.5, w: 12, h: 14, type: 'bed', dim: "12' × 14'", desc: 'Full-width 12-ft master bedroom with attached bath and wardrobe wall.', tips: ['Wide enough for a King bed + cot with plenty of walking space.'], furn: 'bed_king_plus' },
+          { id: 'bath1', name: 'Attached Bath 1', x: 0, y: 34.5, w: 8, h: 4.5, type: 'bath', dim: "8' × 4.5'", desc: 'Attached bathroom for Bedroom 1.', tips: ['Western outer wall provides direct natural ventilation.'] },
+          { id: 'bath2', name: 'Attached / Common Bath 2', x: 17, y: 20.5, w: 8, h: 4.5, type: 'bath', dim: "8' × 4.5'", desc: 'Dual-access bathroom serving Bedroom 2 and the common areas.', tips: ['Placed neatly between Dining and Bedroom 2.'] },
+          { id: 'room2', name: 'Bedroom 2 (Mid-East Suite)', x: 13, y: 25, w: 12, h: 14, type: 'bed', dim: "12' × 14'", desc: 'Second full-sized 12-ft wide bedroom — no compromise on width!', tips: ['Looks out into the Courtyard and gets morning East light.'], furn: 'bed_queen' },
+          { id: 'courtyard', name: 'Front-Center Courtyard (Nadumuttam)', x: 12, y: 39, w: 13, h: 15, type: 'courtyard', dim: "13' × 15'", desc: 'Large square courtyard with 4 Chettinad/village wooden pillars, open sky well, and sit-out bench.', tips: ['Acts as the breezy outdoor room right inside the front zone.'], furn: 'courtyard_well' },
+          { id: 'living', name: 'Front Living Hall', x: 0, y: 39, w: 12, h: 19, type: 'living', dim: "12' × 19'", desc: 'Long, gracious Front Living room alongside the Courtyard.', tips: ['Can hold an L-sofa, swing (oonjal), and floor mats for festival gatherings.'], furn: 'living_lounge' },
+          { id: 'thinnai_f', name: 'Front Verandah / Thinnai', x: 12, y: 54, w: 13, h: 12, type: 'living', dim: "13' × 12'", desc: 'Covered front verandah & entrance foyer between Loki Shed and Courtyard.', tips: ['Built-in stone/red-oxide Thinnai benches for evening tea.'], furn: 'swing_seating' },
+          { id: 'parking', name: 'Car Parking', x: 0, y: 58, w: 12, h: 16, type: 'utility', dim: "12' × 16'", desc: 'Wider 12-ft Car Parking bay so car doors open effortlessly.', tips: ['Extra 1 ft width over the 11-ft sketch makes SUV parking much easier.'], furn: 'car' },
+          { id: 'loki', name: 'Loki Shed', x: 12, y: 66, w: 13, h: 8, type: 'utility', dim: "13' × 8'", desc: 'Front Loki Shed on the right-hand side.', tips: ['Same front footprint as your original plan.'] }
+        ]
+      },
+
+      D: {
+        id: 'D',
+        badge: 'Traditional Mutram-First',
+        name: 'Option 4: Front Courtyard Entry (Classic Chettinad / Kongu)',
+        shortDesc: 'Places the Courtyard + Living right at the front entrance so you step straight into the sunlit Mutram, with bedrooms tucked quietly behind.',
+        summary: 'Inspired by classic Tamil village homes (Thinnai -> Mutram + Living -> Bedrooms -> Kitchen/Dining). Stepping past the front door puts you immediately into the Front Courtyard & Living room, while both bedrooms and the Kitchen/Pantry/Store enjoy complete privacy behind.',
+        pros: [
+          'True "Front la one living and courtyard" experience — the very first space inside the house is the Living + Open Courtyard.',
+          'Guests visiting during festivals stay in the front Living/Courtyard/Dining axis without walking past private bedrooms.',
+          'Large combined Kitchen + Pantry + Store cluster at the rear.'
+        ],
+        cons: [
+          'Carrying groceries from the front gate to the rear Kitchen walks through the full length of the house.'
+        ],
+        sleeping: '• Bedroom 1 (11×15): Sleeps 3 (King + Single Cot)\n• Bedroom 2 (10.5×15): Sleeps 3 (Queen + Single Cot)\n• Front Living + Mutram Verandah: Spacious pillared hall for festival guests.',
+        rooms: [
+          { id: 'service', name: 'Rear Service Area', x: 0, y: 0, w: 25, h: 4, type: 'utility', dim: "25' × 4'", desc: 'Full-width rear service & utility yard.', tips: ['Direct access from both Kitchen and Dining.'] },
+          { id: 'kitchen', name: 'Kitchen', x: 0, y: 4, w: 11, h: 12, type: 'kitchen', dim: "11' × 12'", desc: 'Exact 11×12 Kitchen in the top-left corner as in your Excel blueprint.', tips: ['Adjoins Pantry & Store right below it.'], furn: 'kitchen_L' },
+          { id: 'pantry', name: 'Walk-in Pantry', x: 0, y: 16, w: 5.5, h: 7, type: 'kitchen', dim: "5.5' × 7'", desc: 'Walk-in Pantry entered directly from inside the Kitchen.', tips: ['Dedicated shelves for festival cookware & dry items.'] },
+          { id: 'store', name: 'Store Room', x: 5.5, y: 16, w: 5.5, h: 7, type: 'store', dim: "5.5' × 7'", desc: 'Lockable Store Room entered from the central passage.', tips: ['Keeps bulk storage separate from daily pantry items.'] },
+          { id: 'pooja', name: 'Pooja Room', x: 20.5, y: 4, w: 4.5, h: 4.5, type: 'store', dim: "4.5' × 4.5'", desc: 'Pooja corner in the top-right (NE) corner.', tips: ['Matches your Excel Pooja location.'] },
+          { id: 'dining', name: 'Dining Hall', x: 14.5, y: 4, w: 10.5, h: 14, type: 'kitchen', dim: "10.5' × 14'", desc: 'Rear Dining Hall opposite the Kitchen.', tips: ['Slightly deeper (14 ft) so 6–8 people can dine comfortably.'], furn: 'dining_6' },
+          { id: 'bath2', name: 'Common / Room 2 Bath', x: 14.5, y: 18, w: 10.5, h: 5, type: 'bath', dim: "10.5' × 5'", desc: 'Spacious bathroom between Dining and Bedroom 2.', tips: ['Easy access for both bedroom and daytime use.'] },
+          { id: 'room1', name: 'Bedroom 1 (West)', x: 0, y: 23, w: 11, h: 15, type: 'bed', dim: "11' × 15'", desc: 'Primary bedroom in the quiet middle-west zone.', tips: ['Attached bathroom right at its south wall.'], furn: 'bed_king_plus' },
+          { id: 'bath1', name: 'Attached Bath 1', x: 0, y: 38, w: 11, h: 4.5, type: 'bath', dim: "11' × 4.5'", desc: 'Attached bathroom for Bedroom 1, acting as a sound buffer between Living and Bedroom 1.', tips: ['Keeps Living room chatter away from sleeping guests.'] },
+          { id: 'room2', name: 'Bedroom 2 (East)', x: 14.5, y: 23, w: 10.5, h: 15, type: 'bed', dim: "10.5' × 15'", desc: 'East bedroom widened to 10.5 ft by trimming corridor overhang.', tips: ['Comfortably fits 3 people on festival weekends.'], furn: 'bed_queen' },
+          { id: 'corridor', name: 'Central Passage', x: 11, y: 4, w: 3.5, h: 38.5, type: 'corridor', dim: "3.5' × 38.5'", desc: 'Rear corridor connecting the Front Courtyard to Bedrooms, Store, Kitchen & Dining.', tips: ['Can have a decorative doorway/arch separating the front social zone from the private zone.'] },
+          { id: 'living', name: 'Front Living Hall (West)', x: 0, y: 42.5, w: 12.5, h: 15.5, type: 'living', dim: "12.5' × 15.5'", desc: 'Front Living room directly connected to the Front Courtyard on its right.', tips: ['No wall between Living and Courtyard — just carved pillars!'], furn: 'living_lounge' },
+          { id: 'courtyard', name: 'Front Courtyard (Mutram) & Verandah', x: 12.5, y: 38, w: 12.5, h: 28, type: 'courtyard', dim: "12.5' × 28'", desc: 'Expansive front courtyard + covered pillared sit-out right behind the Loki Shed.', tips: ['Delivers an authentic village home courtyard right in the front half of the house.'], furn: 'courtyard_well' },
+          { id: 'parking', name: 'Car Parking', x: 0, y: 58, w: 12.5, h: 16, type: 'utility', dim: "12.5' × 16'", desc: 'Front-left Car Parking.', tips: ['Direct entry into the Front Living & Courtyard.'], furn: 'car' },
+          { id: 'loki', name: 'Loki Shed', x: 12.5, y: 66, w: 12.5, h: 8, type: 'utility', dim: "12.5' × 8'", desc: 'Front-right Loki Shed.', tips: ['Matches your original front elevation.'] }
+        ]
+      }
+    };
+
+    const TYPE_COLORS = {
+      living:    { fill: '#dbeafe', stroke: '#2563eb', text: '#1e3a8a' },
+      courtyard: { fill: '#bae6fd', stroke: '#0284c7', text: '#0c4a6e' },
+      bed:       { fill: '#f3e8ff', stroke: '#9333ea', text: '#581c87' },
+      bath:      { fill: '#fae8ff', stroke: '#c026d3', text: '#701a75' },
+      kitchen:   { fill: '#ffedd5', stroke: '#ea580c', text: '#7c2d12' },
+      store:     { fill: '#dcfce7', stroke: '#16a34a', text: '#14532d' },
+      utility:   { fill: '#e2e8f0', stroke: '#64748b', text: '#1e293b' },
+      corridor:  { fill: '#f8fafc', stroke: '#94a3b8', text: '#334155' }
+    };
+
+    function renderTabs() {
+      const container = document.getElementById('option-tabs');
+      container.innerHTML = Object.values(PLANS).map(p => {
+        const isActive = p.id === state.activePlan;
+        return `
+          <button onclick="selectPlan('${p.id}')" class="text-left p-3.5 rounded-xl border transition-all ${
+            isActive
+              ? 'bg-[var(--card)] border-blue-500 ring-2 ring-blue-500/30 shadow-sm'
+              : 'bg-[var(--card)]/60 border-[var(--border)] hover:bg-[var(--card)]'
+          }">
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-xs font-bold px-2 py-0.5 rounded ${
+                isActive ? 'bg-blue-600 text-white' : 'bg-[var(--secondary)] text-[var(--secondary-foreground)]'
+              }">${p.badge}</span>
+              <span class="text-xs font-mono text-[var(--muted-foreground)]">Plan ${p.id}</span>
+            </div>
+            <div class="font-bold text-sm mt-2 text-[var(--foreground)]">${p.name.replace(/^Option \d: /, '')}</div>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1 line-clamp-2">${p.shortDesc}</p>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function drawFurniture(r, rx, ry, rw, rh) {
+      if (!state.layers.furniture || !r.furn) return '';
+      let svg = '';
+      if (r.furn === 'kitchen_L') {
+        // L-counter along top & left wall
+        svg += `<rect x="${rx+4}" y="${ry+4}" width="${rw-8}" height="16" fill="#fdba74" stroke="#c2410c" stroke-width="1" opacity="0.85"/>`;
+        svg += `<rect x="${rx+4}" y="${ry+4}" width="18" height="${rh-12}" fill="#fdba74" stroke="#c2410c" stroke-width="1" opacity="0.85"/>`;
+        // Stove & Sink icons
+        svg += `<circle cx="${rx+13}" cy="${ry+45}" r="4" fill="none" stroke="#7c2d12" stroke-width="1.2"/>`;
+        svg += `<circle cx="${rx+13}" cy="${ry+58}" r="4" fill="none" stroke="#7c2d12" stroke-width="1.2"/>`;
+      } else if (r.furn === 'dining_6') {
+        const tw = Math.min(44, rw * 0.45);
+        const th = Math.min(68, rh * 0.48);
+        const tx = rx + (rw - tw) / 2;
+        const ty = ry + (rh - th) / 2 + 8;
+        svg += `<rect x="${tx}" y="${ty}" width="${tw}" height="${th}" rx="4" fill="#fed7aa" stroke="#9a3412" stroke-width="1.2"/>`;
+        // 6 chairs
+        svg += `<rect x="${tx-6}" y="${ty+8}" width="5" height="14" rx="1" fill="#fdba74" stroke="#9a3412" stroke-width="0.8"/>`;
+        svg += `<rect x="${tx-6}" y="${ty+th-22}" width="5" height="14" rx="1" fill="#fdba74" stroke="#9a3412" stroke-width="0.8"/>`;
+        svg += `<rect x="${tx+tw+1}" y="${ty+8}" width="5" height="14" rx="1" fill="#fdba74" stroke="#9a3412" stroke-width="0.8"/>`;
+        svg += `<rect x="${tx+tw+1}" y="${ty+th-22}" width="5" height="14" rx="1" fill="#fdba74" stroke="#9a3412" stroke-width="0.8"/>`;
+      } else if (r.furn === 'bed_king_plus') {
+        // King bed (6x6.5 ft -> ~66x70px) + single daybed
+        svg += `<rect x="${rx+6}" y="${ry+14}" width="66" height="62" rx="3" fill="#e9d5ff" stroke="#6b21a8" stroke-width="1.2"/>`;
+        svg += `<rect x="${rx+6}" y="${ry+18}" width="16" height="24" rx="2" fill="#f3e8ff" stroke="#6b21a8" stroke-width="1"/>`;
+        svg += `<rect x="${rx+6}" y="${ry+46}" width="16" height="24" rx="2" fill="#f3e8ff" stroke="#6b21a8" stroke-width="1"/>`;
+        // Extra daybed / cot for 3rd person
+        svg += `<rect x="${rx+6}" y="${ry+rh-36}" width="64" height="28" rx="3" fill="#e9d5ff" stroke="#6b21a8" stroke-width="1" stroke-dasharray="3,2"/>`;
+      } else if (r.furn === 'bed_queen') {
+        // Queen bed + single cot
+        svg += `<rect x="${rx+rw-68}" y="${ry+12}" width="62" height="56" rx="3" fill="#e9d5ff" stroke="#6b21a8" stroke-width="1.2"/>`;
+        svg += `<rect x="${rx+rw-24}" y="${ry+16}" width="16" height="20" rx="2" fill="#f3e8ff" stroke="#6b21a8" stroke-width="1"/>`;
+        svg += `<rect x="${rx+rw-24}" y="${ry+42}" width="16" height="20" rx="2" fill="#f3e8ff" stroke="#6b21a8" stroke-width="1"/>`;
+        // Extra cot
+        svg += `<rect x="${rx+rw-66}" y="${ry+rh-34}" width="60" height="26" rx="3" fill="#e9d5ff" stroke="#6b21a8" stroke-width="1" stroke-dasharray="3,2"/>`;
+      } else if (r.furn === 'courtyard_well') {
+        // Central open-to-sky sunken well + 4 pillars + Tulsi
+        const cw = Math.min(62, rw * 0.56);
+        const ch = Math.min(92, rh * 0.56);
+        const cx = rx + (rw - cw) / 2;
+        const cy = ry + (rh - ch) / 2;
+        svg += `<rect x="${cx}" y="${cy}" width="${cw}" height="${ch}" rx="3" fill="#f0f9ff" stroke="#0284c7" stroke-width="1.8" stroke-dasharray="5,3"/>`;
+        svg += `<circle cx="${cx+cw/2}" cy="${cy+ch/2}" r="9" fill="#bbf7d0" stroke="#15803d" stroke-width="1.5"/>`;
+        // 4 Wooden Pillars
+        [[cx, cy], [cx+cw, cy], [cx, cy+ch], [cx+cw, cy+ch]].forEach(([px, py]) => {
+          svg += `<circle cx="${px}" cy="${py}" r="3.5" fill="#92400e" stroke="#fff" stroke-width="1"/>`;
+        });
+      } else if (r.furn === 'living_lounge') {
+        // L-sofa
+        svg += `<rect x="${rx+8}" y="${ry+18}" width="22" height="75" rx="3" fill="#bfdbfe" stroke="#1d4ed8" stroke-width="1.2"/>`;
+        svg += `<rect x="${rx+8}" y="${ry+18}" width="64" height="22" rx="3" fill="#bfdbfe" stroke="#1d4ed8" stroke-width="1.2"/>`;
+        svg += `<rect x="${rx+40}" y="${ry+52}" width="26" height="36" rx="2" fill="#93c5fd" stroke="#1d4ed8" stroke-width="1"/>`;
+      } else if (r.furn === 'car') {
+        const cw = 64, ch = 122;
+        const cx = rx + (rw - cw)/2, cy = ry + (rh - ch)/2 + 8;
+        svg += `<rect x="${cx}" y="${cy}" width="${cw}" height="${ch}" rx="12" fill="#cbd5e1" stroke="#475569" stroke-width="1.5"/>`;
+        svg += `<rect x="${cx+8}" y="${cy+24}" width="${cw-16}" height="56" rx="6" fill="#94a3b8" stroke="#475569" stroke-width="1"/>`;
+      } else if (r.furn === 'swing_seating') {
+        const sx = rx + rw/2 - 24, sy = ry + 18;
+        svg += `<rect x="${sx}" y="${sy}" width="48" height="16" rx="2" fill="#fde68a" stroke="#b45309" stroke-width="1.5"/>`;
+      }
+      return svg;
+    }
+
+    function renderBlueprint() {
+      const plan = PLANS[state.activePlan];
+      document.getElementById('plan-title').textContent = plan.name;
+      document.getElementById('plan-summary').textContent = plan.summary;
+      document.getElementById('plan-pros').innerHTML = plan.pros.map(p => `<li>${p}</li>`).join('');
+      document.getElementById('plan-cons').innerHTML = plan.cons.map(c => `<li>${c}</li>`).join('');
+      document.getElementById('plan-sleeping').innerHTML = plan.sleeping.split('\n').map(l => `<div>${l}</div>`).join('');
+
+      const svg = document.getElementById('blueprint-svg');
+      const totalW = 25 * SCALE;
+      const totalH = 74 * SCALE;
+
+      let html = '';
+
+      // Top & Side Dimension Rulers (matching Excel 1..25 and 0..74)
+      html += `<text x="${OX + totalW/2}" y="22" text-anchor="middle" font-size="12" font-weight="bold" fill="#64748b">REAR / BACKYARD (25 ft Width)</text>`;
+      html += `<text x="${OX + totalW/2}" y="${OY + totalH + 38}" text-anchor="middle" font-size="12" font-weight="bold" fill="#dc2626">▲ FRONT ROAD / ENTRANCE (25 ft Width) ▲</text>`;
+
+      // Ruler ticks every 5 feet along Y (0 to 74)
+      for (let f = 0; f <= 74; f += 6) {
+        const yPos = OY + f * SCALE;
+        html += `<line x1="${OX - 8}" y1="${yPos}" x2="${OX}" y2="${yPos}" stroke="#94a3b8" stroke-width="1"/>`;
+        html += `<text x="${OX - 12}" y="${yPos + 4}" text-anchor="end" font-size="10" font-family="monospace" fill="#64748b">${f}'</text>`;
+        html += `<text x="${OX + totalW + 10}" y="${yPos + 4}" text-anchor="start" font-size="10" font-family="monospace" fill="#64748b">${f}'</text>`;
+      }
+
+      // Ruler ticks along X (0 to 25)
+      for (let x = 0; x <= 25; x += 5) {
+        const xPos = OX + x * SCALE;
+        html += `<line x1="${xPos}" y1="${OY - 6}" x2="${xPos}" y2="${OY}" stroke="#94a3b8" stroke-width="1"/>`;
+        html += `<text x="${xPos}" y="${OY - 10}" text-anchor="middle" font-size="10" font-family="monospace" fill="#64748b">${x}'</text>`;
+      }
+
+      // Outer plot boundary
+      html += `<rect x="${OX}" y="${OY}" width="${totalW}" height="${totalH}" fill="#ffffff" stroke="#1e293b" stroke-width="3"/>`;
+
+      // Rooms
+      plan.rooms.forEach(r => {
+        const rx = OX + r.x * SCALE;
+        const ry = OY + r.y * SCALE;
+        const rw = r.w * SCALE;
+        const rh = r.h * SCALE;
+        const c = TYPE_COLORS[r.type] || TYPE_COLORS.utility;
+        const isSelected = state.selectedRoomId === r.id;
+
+        html += `<g onclick="selectRoom('${r.id}')" class="room-rect ${isSelected ? 'room-selected' : ''}">`;
+        html += `<rect x="${rx}" y="${ry}" width="${rw}" height="${rh}" fill="${c.fill}" stroke="${isSelected ? '#2563eb' : c.stroke}" stroke-width="${isSelected ? '3' : '1.6'}"/>`;
+
+        // Furniture layer
+        html += drawFurniture(r, rx, ry, rw, rh);
+
+        // Room label & dimension
+        const cx = rx + rw / 2;
+        const cy = ry + rh / 2;
+        const shortName = r.name.split(' (')[0];
+
+        if (rw >= 42 && rh >= 38) {
+          html += `<text x="${cx}" y="${cy - (state.layers.dims ? 4 : -3)}" text-anchor="middle" font-size="11" font-weight="700" fill="${c.text}">${shortName}</text>`;
+          if (state.layers.dims) {
+            html += `<text x="${cx}" y="${cy + 11}" text-anchor="middle" font-size="10" font-family="monospace" font-weight="600" fill="${c.text}" opacity="0.85">${r.dim}</text>`;
+          }
+        } else if (rh > rw * 2) {
+          // Vertical corridor text
+          html += `<text x="${cx}" y="${cy}" text-anchor="middle" font-size="10" font-weight="700" fill="${c.text}" transform="rotate(-90 ${cx} ${cy})">${shortName} (${r.dim})</text>`;
+        }
+        html += `</g>`;
+      });
+
+      // Red Main Entrance Threshold bar (like user's Excel rows 68-70)
+      html += `<rect x="${OX + 11 * SCALE}" y="${OY + 67.5 * SCALE}" width="${3.5 * SCALE}" height="8" fill="#dc2626" rx="2"/>`;
+
+      // Flow & Breeze Overlay
+      if (state.layers.flow) {
+        html += `
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#0284c7" />
+            </marker>
+          </defs>
+          <path d="M ${OX + 12.7 * SCALE} ${OY + 72 * SCALE} L ${OX + 12.7 * SCALE} ${OY + 2 * SCALE}" stroke="#0284c7" stroke-width="3" stroke-dasharray="6,4" marker-end="url(#arrow)" fill="none" opacity="0.85"/>
+          <path d="M ${OX + 5 * SCALE} ${OY + 48 * SCALE} Q ${OX + 13 * SCALE} ${OY + 45 * SCALE} ${OX + 20 * SCALE} ${OY + 45 * SCALE}" stroke="#0284c7" stroke-width="2.5" stroke-dasharray="4,3" marker-end="url(#arrow)" fill="none" opacity="0.85"/>
+        `;
+      }
+
+      svg.innerHTML = html;
+
+      // Default select first highlight room if none selected or not found
+      const activeRoom = plan.rooms.find(r => r.id === state.selectedRoomId) || plan.rooms.find(r => r.id === 'courtyard') || plan.rooms[0];
+      updateRoomInspector(activeRoom);
+    }
+
+    function updateRoomInspector(room) {
+      if (!room) return;
+      state.selectedRoomId = room.id;
+      document.getElementById('room-badge').textContent = room.dim;
+      document.getElementById('room-name').textContent = room.name;
+      document.getElementById('room-desc').textContent = room.desc;
+      document.getElementById('room-tips').innerHTML = (room.tips || []).map(t => `<div class="flex items-start gap-1.5"><span class="text-blue-500 font-bold">•</span><span>${t}</span></div>`).join('');
+    }
+
+    function selectPlan(planId) {
+      state.activePlan = planId;
+      renderTabs();
+      renderBlueprint();
+    }
+
+    function selectRoom(roomId) {
+      state.selectedRoomId = roomId;
+      renderBlueprint();
+    }
+
+    function toggleLayer(layer) {
+      state.layers[layer] = !state.layers[layer];
+      const btn = document.getElementById(`toggle-${layer}`);
+      const labels = { dims: 'Dimensions', furniture: 'Beds & Furniture', flow: 'Breeze & Walk Flow' };
+      btn.textContent = `${labels[layer]}: ${state.layers[layer] ? 'ON' : 'OFF'}`;
+      btn.className = `px-3 py-1.5 text-xs font-medium rounded-lg border border-[var(--border)] transition ${
+        state.layers[layer]
+          ? 'bg-[var(--primary)] text-[var(--primary-foreground)]'
+          : 'bg-[var(--secondary)] text-[var(--secondary-foreground)]'
+      }`;
+      renderBlueprint();
+    }
+
+    // Initialize
+    renderTabs();
+    renderBlueprint();
+  </script>
+</body>
+</html>

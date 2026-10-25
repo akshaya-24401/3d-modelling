@@ -1,0 +1,157 @@
+[
+  {
+    "id": "sketch", "tag": "0", "name": "Your sketch, as I read it",
+    "idea": "Redrawn from the Excel grid so you can check I have the sizes right before looking at the options.",
+    "entry": 13.5,
+    "rooms": [
+      {"n": "Car parking", "t": "service", "r": [0, 0, 11, 16]},
+      {"n": "Living", "t": "public", "r": [0, 16, 11, 16]},
+      {"n": "Room 1", "t": "bed", "r": [0, 32, 11, 18]},
+      {"n": "Store", "t": "kitchen", "r": [0, 50, 11, 8]},
+      {"n": "Kitchen", "t": "kitchen", "r": [0, 58, 11, 12]},
+      {"n": "Service", "t": "service", "r": [0, 70, 11, 4]},
+      {"n": "Passage", "t": "circ", "r": [11, 0, 5, 74]},
+      {"n": "Loki shed", "t": "service", "r": [16, 0, 9, 7]},
+      {"n": "Living", "t": "public", "r": [16, 7, 9, 16]},
+      {"n": "Courtyard?", "t": "open", "r": [16, 23, 9, 16]},
+      {"n": "Room 2", "t": "bed", "r": [16, 39, 9, 16]},
+      {"n": "Dining", "t": "public", "r": [16, 55, 9, 12]},
+      {"n": "Pooja / service", "t": "pooja", "r": [16, 67, 9, 7]}
+    ]
+  },
+  {
+    "id": "a", "tag": "A", "name": "Side passage",
+    "idea": "Your sketch, tidied. Same two strips and passage, but the living becomes one full-width hall and both bedrooms get an attached bath.",
+    "entry": 18,
+    "good": [
+      "Closest to what you drew, so the family will recognise it",
+      "Simplest to build: plain rectangles and one straight roof line",
+      "Every room opens off the passage, so no room is a walk-through"
+    ],
+    "watch": [
+      "The passage still uses about 150 sq ft",
+      "Bedroom 2 is narrow at 9′ wide",
+      "The courtyard only lights the right-hand side of the house"
+    ],
+    "rooms": [
+      {"n": "Car porch", "t": "service", "r": [0, 0, 11, 16]},
+      {"n": "Loki shed", "t": "service", "r": [11, 0, 7, 7]},
+      {"n": "Garden", "t": "open", "r": [18, 0, 7, 7]},
+      {"n": "Thinnai", "t": "public", "r": [11, 7, 14, 9]},
+      {"n": "Living / koodam", "t": "public", "r": [0, 16, 25, 16]},
+      {"n": "Bedroom 1", "t": "bed", "r": [0, 32, 11, 13]},
+      {"n": "Bath 1", "t": "wet", "r": [0, 45, 11, 5]},
+      {"n": "Store", "t": "kitchen", "r": [0, 50, 11, 8]},
+      {"n": "Kitchen+pantry", "t": "kitchen", "r": [0, 58, 11, 12]},
+      {"n": "Passage", "t": "circ", "r": [11, 32, 5, 30]},
+      {"n": "Courtyard", "t": "open", "r": [16, 32, 9, 14], "inner": [17, 33, 7, 12]},
+      {"n": "Bedroom 2", "t": "bed", "r": [16, 46, 9, 11]},
+      {"n": "Bath 2", "t": "wet", "r": [16, 57, 9, 5]},
+      {"n": "Dining", "t": "public", "r": [11, 62, 14, 8]},
+      {"n": "Service yard", "t": "service", "r": [0, 70, 16, 4]},
+      {"n": "Pooja", "t": "pooja", "r": [16, 70, 9, 4]}
+    ]
+  },
+  {
+    "id": "b", "tag": "B", "name": "Central mutram",
+    "idea": "The traditional Tamil layout. A koodam (hall) at the front, then an open-to-sky mutram ringed by a verandah that the rooms open onto.",
+    "entry": 18,
+    "good": [
+      "Best light and cross-ventilation of the four",
+      "The mutram becomes the festival space: kolam, Pongal pot, everyone sitting together",
+      "Pooja sits right by the entrance, visible from the hall"
+    ],
+    "watch": [
+      "The mutram needs good drainage and a lockable grill on top for weeks you are away",
+      "Roof is more complex, with gutters on all four sides of the opening",
+      "Bedroom 1 shares Bath 1 with guests"
+    ],
+    "rooms": [
+      {"n": "Car porch", "t": "service", "r": [0, 0, 11, 16]},
+      {"n": "Loki shed", "t": "service", "r": [11, 0, 7, 7]},
+      {"n": "Garden", "t": "open", "r": [18, 0, 7, 7]},
+      {"n": "Thinnai", "t": "public", "r": [11, 7, 14, 9]},
+      {"n": "Living / koodam", "t": "public", "r": [0, 16, 19, 14]},
+      {"n": "Foyer", "t": "circ", "r": [19, 16, 6, 7]},
+      {"n": "Pooja", "t": "pooja", "r": [19, 23, 6, 7]},
+      {"n": "Bedroom 1", "t": "bed", "r": [0, 30, 11, 13]},
+      {"n": "Bath 1 (common)", "t": "wet", "r": [0, 43, 11, 5]},
+      {"n": "Mutram + verandah", "t": "open", "r": [11, 30, 14, 18], "inner": [14, 33, 8, 12]},
+      {"n": "Dining", "t": "public", "r": [0, 48, 13, 12]},
+      {"n": "Bedroom 2", "t": "bed", "r": [13, 48, 12, 12]},
+      {"n": "Kitchen+pantry", "t": "kitchen", "r": [0, 60, 11, 14]},
+      {"n": "Store", "t": "kitchen", "r": [11, 60, 8, 8]},
+      {"n": "Bath 2", "t": "wet", "r": [19, 60, 6, 8]},
+      {"n": "Service yard", "t": "service", "r": [11, 68, 14, 6]}
+    ]
+  },
+  {
+    "id": "c", "tag": "C", "name": "Front courtyard",
+    "idea": "Living and courtyard side by side at the front, as you described. Bedrooms sit quietly in the middle; dining, kitchen and service are at the back.",
+    "entry": 18,
+    "good": [
+      "Matches “front: one living and courtyard” directly",
+      "Bedrooms are private, away from both the road and the kitchen",
+      "Three toilets, including a common one for guests"
+    ],
+    "watch": [
+      "The courtyard is near the road, so the front wall needs to be solid for privacy",
+      "Dining and kitchen at the back get less daylight",
+      "The passage to the back is only 3′ wide"
+    ],
+    "rooms": [
+      {"n": "Car porch", "t": "service", "r": [0, 0, 11, 16]},
+      {"n": "Loki shed", "t": "service", "r": [11, 0, 7, 7]},
+      {"n": "Garden", "t": "open", "r": [18, 0, 7, 7]},
+      {"n": "Thinnai", "t": "public", "r": [11, 7, 14, 9]},
+      {"n": "Living", "t": "public", "r": [0, 16, 14, 16]},
+      {"n": "Courtyard", "t": "open", "r": [14, 16, 11, 16], "inner": [16, 18, 7, 12]},
+      {"n": "Bedroom 1", "t": "bed", "r": [0, 32, 11, 13]},
+      {"n": "Bath 1", "t": "wet", "r": [0, 45, 11, 5]},
+      {"n": "Passage", "t": "circ", "r": [11, 32, 3, 18]},
+      {"n": "Bedroom 2", "t": "bed", "r": [14, 32, 11, 13]},
+      {"n": "Bath 2", "t": "wet", "r": [14, 45, 11, 5]},
+      {"n": "Dining", "t": "public", "r": [0, 50, 14, 12]},
+      {"n": "Pooja", "t": "pooja", "r": [14, 50, 11, 6]},
+      {"n": "Store", "t": "kitchen", "r": [14, 56, 11, 8]},
+      {"n": "Kitchen+pantry", "t": "kitchen", "r": [0, 62, 14, 12]},
+      {"n": "Service yard", "t": "service", "r": [14, 64, 6, 10]},
+      {"n": "WC", "t": "wet", "r": [20, 64, 5, 6]},
+      {"n": "Wash", "t": "service", "r": [20, 70, 5, 4]}
+    ]
+  },
+  {
+    "id": "d", "tag": "D", "name": "Side light-court",
+    "idea": "A long, narrow open-to-sky court runs down one side like a light well. Every room gets a window or door onto it.",
+    "entry": 18,
+    "good": [
+      "Suits a narrow 25′ plot: light and air reach every room evenly",
+      "The court doubles as the corridor, so no space is lost to a dark passage",
+      "A large 7′ × 14′ store for festival vessels, bedding and things left between visits"
+    ],
+    "watch": [
+      "A long thin court is less useful as a gathering space",
+      "Roughly 26′ of extra edge to waterproof and grill",
+      "Store is far from the kitchen, so the kitchen needs its own pantry shelves"
+    ],
+    "rooms": [
+      {"n": "Car porch", "t": "service", "r": [0, 0, 11, 16]},
+      {"n": "Loki shed", "t": "service", "r": [11, 0, 7, 7]},
+      {"n": "Garden", "t": "open", "r": [18, 0, 7, 7]},
+      {"n": "Thinnai", "t": "public", "r": [11, 7, 14, 9]},
+      {"n": "Living / koodam", "t": "public", "r": [0, 16, 19, 14]},
+      {"n": "Foyer", "t": "circ", "r": [19, 16, 6, 8]},
+      {"n": "Pooja", "t": "pooja", "r": [19, 24, 6, 6]},
+      {"n": "Bedroom 1", "t": "bed", "r": [0, 30, 12, 13]},
+      {"n": "Bath 1", "t": "wet", "r": [12, 30, 7, 6]},
+      {"n": "Store", "t": "kitchen", "r": [12, 36, 7, 14]},
+      {"n": "Bedroom 2", "t": "bed", "r": [0, 43, 12, 13]},
+      {"n": "Bath 2", "t": "wet", "r": [12, 50, 7, 6]},
+      {"n": "Light-court", "t": "open", "r": [19, 30, 6, 26], "inner": [21, 31, 4, 24]},
+      {"n": "Dining", "t": "public", "r": [0, 56, 13, 12]},
+      {"n": "Kitchen+pantry", "t": "kitchen", "r": [13, 56, 12, 12]},
+      {"n": "WC", "t": "wet", "r": [0, 68, 6, 6]},
+      {"n": "Service yard", "t": "service", "r": [6, 68, 19, 6]}
+    ]
+  }
+]

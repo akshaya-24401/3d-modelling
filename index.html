@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TN Village House 3D — Unified Front Pavilion &amp; Central Mutram (25' × 74')</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <!-- Top Bar: Title & Camera Views -->
+    <header id="topbar">
+      <div class="brand">
+        <span class="badge">25′ × 74′ · 1,850 sq.ft</span>
+        <div>
+          <h1>Unified Front Pavilion &amp; Central Mutram</h1>
+          <p class="subtitle">2 Bedrooms (6-Person Layout) · Kitchen + Pantry · Store · Front Living + Courtyard · Loki Shed</p>
+        </div>
+      </div>
+
+      <div class="view-buttons">
+        <span class="group-label">Camera:</span>
+        <button class="btn active" data-cam="iso">3D Dollhouse</button>
+        <button class="btn" data-cam="top">Top-Down Plan</button>
+        <button class="btn" data-cam="pavilion">Front Living + Mutram</button>
+        <button class="btn" data-cam="walk">Eye-Level Walk-In</button>
+        <button class="btn" data-cam="kitchen">Kitchen &amp; Dining</button>
+      </div>
+    </header>
+
+    <!-- Left Control Panel: Cutaway, Roof, Lighting, Labels -->
+    <aside id="panel">
+      <div class="section-title">Wall &amp; Roof Mode</div>
+      <div class="seg-group" id="wallModeGroup">
+        <button class="seg-btn active" data-mode="dollhouse">Full Walls (9.5′)</button>
+        <button class="seg-btn" data-mode="half">Half Cutaway (4.2′)</button>
+        <button class="seg-btn" data-mode="rooftop">With Clay Roof</button>
+      </div>
+
+      <div class="section-title" style="margin-top: 12px;">Time of Day &amp; Lighting</div>
+      <div class="seg-group" id="lightModeGroup">
+        <button class="seg-btn active" data-light="morning">Morning Sun</button>
+        <button class="seg-btn" data-light="golden">Golden Hour</button>
+        <button class="seg-btn" data-light="evening">Festival Night</button>
+      </div>
+
+      <div class="section-title" style="margin-top: 12px;">Display Layers</div>
+      <label class="toggle-row">
+        <span>Room Labels &amp; Dimensions</span>
+        <input type="checkbox" id="toggleLabels" checked />
+      </label>
+      <label class="toggle-row">
+        <span>Beds, Sofa, Oonjal &amp; Car</span>
+        <input type="checkbox" id="toggleFurniture" checked />
+      </label>
+      <label class="toggle-row">
+        <span>Dimension Grid (1 ft / 5 ft)</span>
+        <input type="checkbox" id="toggleGrid" checked />
+      </label>
+
+      <div class="section-title" style="margin-top: 12px;">Material Palette</div>
+      <label class="color-row">Lime Plaster Walls <input type="color" id="wallColor" value="#f6f1e7" /></label>
+      <label class="color-row">Mangalore Tile Roof <input type="color" id="roofColor" value="#b35432" /></label>
+      <label class="color-row">Red Oxide / Athangudi <input type="color" id="oxideColor" value="#9e3b2b" /></label>
+
+      <div id="roomInfoBox">
+        <div class="info-tag" id="infoDim">25′ × 74′ Footprint</div>
+        <div class="info-title" id="infoName">Click any room in 3D</div>
+        <div class="info-desc" id="infoDesc">Drag to orbit · Scroll to zoom · Right-drag to pan · Click any room floor to inspect its dimensions and layout.</div>
+      </div>
+    </aside>
+
+    <!-- Legend Pill Bottom -->
+    <div id="legend">
+      <span><i style="background:#d97742"></i>Front Living &amp; Thinnai</span>
+      <span><i style="background:#38bdf8"></i>Open Sky Mutram</span>
+      <span><i style="background:#c084fc"></i>2 Bedrooms (Sleeps 6)</span>
+      <span><i style="background:#fb923c"></i>Kitchen, Pantry &amp; Dining</span>
+      <span><i style="background:#4ade80"></i>Store &amp; Pooja</span>
+      <span><i style="background:#94a3b8"></i>Parking, Loki Shed &amp; Service</span>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
